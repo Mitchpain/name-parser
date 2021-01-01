@@ -1,8 +1,21 @@
 #!/bin/bash
+##### OpenSubtitiles : Optional. If not put, download as a guest. Can limit the overall experience
+#OS_USERNAME: Username on www.opensubtitles.org to download english subtitles.
+#OS_PASSWORD: Password on opensubtitles
+#####
+##### Mandatory fields
 #TORRENT_NAME: Torrent Name
-#OUTPUT_PATH: Media center target
-TORRENT_NAME="Funny Games (2007) [BluRay] [1080p] [YTS.AM]"
-#TORRENT_PATH=""
+#DOWNLOAD_PATH: Path where the file is downloaded
+#OUTPUT_PATH: Media center target. Needs to follow the Plex structure:
+#       /Media
+#           /Movies
+#            movie content
+#        /TV Shows
+#              television content
+#####
+#OS_USERNAME=""
+#OS_PASSWORD=""
+TORRENT_NAME="Silicon.Valley.S06E07.720p.WEB.x265-MiNX[TGx]"
+DOWNLOAD_PATH="$HOME//Downloads"
 OUTPUT_PATH="$HOME/Media"
-npm run build
-node parseTorrentName.js -n "$TORRENT_NAME" -t "$OUTPUT_PATH"
+node parseTorrentName.js -n "$TORRENT_NAME" -t "$OUTPUT_PATH" -d "$DOWNLOAD_PATH" -u "$OS_USERNAME" -p "$OS_PASSWORD"
