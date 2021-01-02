@@ -16,6 +16,6 @@
 #OS_USERNAME=""
 #OS_PASSWORD=""
 TORRENT_NAME="$TR_TORRENT_NAME"
-DOWNLOAD_PATH="$HOME//Downloads"
+DOWNLOAD_PATH="$HOME/Downloads"
 OUTPUT_PATH="$HOME/Media"
-node parseTorrentName.js -n "$TORRENT_NAME" -t "$OUTPUT_PATH" -d "$DOWNLOAD_PATH" -u "$OS_USERNAME" -p "$OS_PASSWORD"
+node "$HOME/Media/scripts/media_torrent/parseTorrentName.js" -n "$TORRENT_NAME" -t "$OUTPUT_PATH" -d "$DOWNLOAD_PATH" -u "$OS_USERNAME" -p "$OS_PASSWORD"
