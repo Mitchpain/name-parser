@@ -76,7 +76,18 @@ const createFilmsInfoFromFile = (filmPath: string): FilmInfo[] => {
 
 const createFilmsInfoFromFolder = (filmsPath: string): FilmInfo[] => {
   const filmInfo = [];
-  fs.readdir(filmsPath, (err, files) => {
+  const files = fs.readdirSync(filmsPath);
+  if (!files) return filmInfo;
+  files.forEach((file) => {
+    const ext = path.extname(file);
+    if (VIDEO_EXT.indexOf(ext) != -1) {
+      filmInfo.push({
+        fileName: file,
+        fileDirectory: filmsPath,
+      });
+    }
+  });
+  /*fs.readdir(filmsPath, (err, files) => {
     if (!files) return filmInfo;
     files.forEach((file) => {
       const ext = path.extname(file);
@@ -87,7 +98,7 @@ const createFilmsInfoFromFolder = (filmsPath: string): FilmInfo[] => {
         });
       }
     });
-  });
+  });*/
   return filmInfo;
 };
 
@@ -177,9 +188,13 @@ const createMoviePath = (information: movieInformation, targetDir: string) => {
   return `${targetDir}/Movies/${folderName}`;
 };
 
-const createSeriesPath = (information: serieInformation, targetDir: string) => {
+const createSeriesPath = (
+  information: serieInformation,
+  targetDir: string,
+  seasonNumber: string | undefined
+) => {
   const serieTitle = information.title;
-  const season = information.season;
+  const season = seasonNumber ? seasonNumber : information.season;
   const serieFolder = `${targetDir}/TV Shows/${serieTitle}/`;
   if (!fs.existsSync(serieFolder)) {
     fs.mkdirSync(serieFolder);
@@ -190,24 +205,47 @@ const createSeriesPath = (information: serieInformation, targetDir: string) => {
 const verifyIfMovie = (downloadPath: string, torrentName: string) => {
   if (isFile(`${downloadPath}/${torrentName}`)) {
     const information = ptt.parse(torrentName);
-    if (information.season != undefined || information.episode !== undefined)
+    if (information.season != undefined || information.episode != undefined)
       return false;
     return true;
   }
-  fs.readdir(`${downloadPath}/${torrentName}`, (err, files) => {
-    files.forEach((file) => {
-      const ext = path.extname(file);
-      if (VIDEO_EXT.indexOf(ext) != -1) {
-        const information = ptt.parse(file);
-        if (
-          information.season != undefined ||
-          information.episode !== undefined
-        )
-          return false;
-        return true;
-      }
-    });
+  const files = fs.readdirSync(`${downloadPath}/${torrentName}`);
+  let isMovie = true;
+  files.forEach((file) => {
+    const ext = path.extname(file);
+    if (VIDEO_EXT.indexOf(ext) != -1) {
+      const information = ptt.parse(file);
+      if (information.season !== undefined || information.episode !== undefined)
+        isMovie = false;
+    }
   });
+  return isMovie;
+};
+
+const fetchSeasonFromEpisode = (downloadPath: string, torrentName: string) => {
+  const files = fs.readdirSync(`${downloadPath}/${torrentName}`);
+  let seasonNumber;
+  files.forEach((file) => {
+    const ext = path.extname(file);
+    if (VIDEO_EXT.indexOf(ext) != -1) {
+      const information = ptt.parse(file);
+      seasonNumber = information.season;
+    }
+  });
+  return seasonNumber;
+};
+
+const logProcess = (name: string, information) => {
+  fs.appendFile(
+    "/tmp/logProcess",
+    `Name: ${name}, \n info:${JSON.stringify(information)}`,
+    function (err) {
+      if (err) {
+        return console.log(err);
+      }
+      console.log("The file was saved!");
+    }
+  );
 };
 
 let args = minimist(process.argv.slice(2));
@@ -218,22 +256,19 @@ const osUsername = args.u ? args.u : undefined;
 const osPassword = args.p ? args.p : undefined;
 const information = ptt.parse(torrentName);
 
-fs.writeFile(
-  "/tmp/test",
-  `Name: ${torrentName}, \n info:${JSON.stringify(information)}`,
-  function (err) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log("The file was saved!");
-  }
-);
+logProcess(torrentName, information);
 
 const torrentIsMovie = verifyIfMovie(downloadPath, torrentName);
+let seasonNumber;
+if (!torrentIsMovie) {
+  if (!information.season) {
+    seasonNumber = fetchSeasonFromEpisode(downloadPath, torrentName);
+  }
+}
 const currentPath = `${downloadPath}/${torrentName}`;
 let newPath = torrentIsMovie
   ? createMoviePath(information, targetDir)
-  : createSeriesPath(information, targetDir);
+  : createSeriesPath(information, targetDir, seasonNumber);
 if (!fs.existsSync(newPath)) {
   fs.mkdirSync(newPath);
 }
