@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build:windows": "tsc parseTorrentNameWindows.ts",
     "build": "tsc parseTorrentName.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "minimist": "^1.2.5",
+    "mv": "^2.1.1",
     "opensubtitles-api": "^5.1.2",
     "parse-torrent-title": "^1.3.0"
   },
