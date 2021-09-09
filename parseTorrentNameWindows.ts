@@ -223,11 +223,13 @@ const processFile = (
 
   const newPath = `${newDir}/${fileName}`;
   const currentPath = `${currentDirectory}/${fileName}`;
+
   mv(currentPath, newPath, function (err) {
     if (err) {
       logProcess(`processFile: ${fileName}`, `error: ${err}`);
+    } else {
+      logProcess(`processFile: ${fileName}`, `completed`);
     }
-    logProcess(`processFile: ${fileName}`, `completed`);
   });
   return {
     name: fileName,

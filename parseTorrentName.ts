@@ -155,7 +155,7 @@ const createMoviePath = (information: MovieInformation, targetDir: string) => {
 const createSeriesPath = (information: MovieInformation, targetDir: string) => {
   const serieTitle = information.title;
   const season = information.season;
-  const serieFolder = `${targetDir}/TV Shows/${serieTitle}/`;
+  const serieFolder = `${targetDir}/Tv/${serieTitle}/`;
   createPath(serieFolder);
   const seasonFolder = `${serieFolder}/Season ${season}/`;
   createPath(seasonFolder);
