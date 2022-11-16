@@ -3,7 +3,7 @@ const fs = require("fs");
 const minimist = require("minimist");
 const OS = require("opensubtitles-api");
 const path = require("path");
-const VIDEO_EXT = [".mp4", ".mkv", ".avi"];
+const VIDEO_EXT = [".mp4", ".mkv", ".avi", ".m4v"];
 const SUBTITLE_EXT = ["srt", "vtt"];
 const https = require("https");
 
@@ -199,7 +199,11 @@ const processFolder = (
   const folderPath = `${currentDirectory}/${folderName}`;
   const files = fs.readdirSync(folderPath);
   files.forEach((file) => {
-    movedFileInfos.push(processFile(folderPath, file, targetDirectory));
+    if (isFile(`${folderPath}/${file}`)) {
+      movedFileInfos.push(processFile(folderPath, file, targetDirectory));
+    } else {
+    movedFileInfos = processFolder(folderPath, file, targetDirectory);
+    
   });
   return movedFileInfos;
 };
