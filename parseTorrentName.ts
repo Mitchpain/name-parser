@@ -19,125 +19,9 @@ interface MovedFileInfo {
   name: string;
 }
 
-/*
-interface OsInfos {
-  username: string | undefined;
-  password: string | undefined;
-}
-
-const download = function (url: string, dest: string) {
-  const request = https.get(url, function (response) {
-    if (response.statusCode === 200) {
-      var file = fs.createWriteStream(dest);
-      response.pipe(file);
-    } else {
-      logProcess(`error`, `while downloading subs ${response}`);
-    }
-    request.setTimeout(60000, function () {
-      logProcess(`error`, `timeout while downloading subs`);
-      request.abort();
-    });
-  });
-};
-*/
 const isFile = (path: string) => {
   return !fs.lstatSync(path).isDirectory();
 };
-/*
-const createOS = (osInfos: OsInfos) => {
-  let OpenSubtitles;
-  if (osInfos.username && osInfos.password)
-    OpenSubtitles = new OS({
-      useragent: "UserAgent",
-      username: osInfos.username,
-      password: osInfos.password,
-      ssl: true,
-    });
-  else
-    OpenSubtitles = new OS({
-      useragent: "UserAgent",
-      ssl: true,
-    });
-  return OpenSubtitles;
-};
-
-const createSimpleQuery = (filmInfo: MovedFileInfo) => {
-  let query = {
-    path: `${filmInfo.directory}/${filmInfo.name}`,
-    filename: filmInfo.name,
-    extensions: SUBTITLE_EXT,
-  };
-  return query;
-};
-
-const createComplexQuery = (filmInfo: MovedFileInfo) => {
-  const info = ptt.parse(filmInfo.name);
-  const isMovie = verifyIfMovie(info);
-  let query = {
-    query: info.title,
-    extensions: SUBTITLE_EXT,
-  };
-  if (!isMovie) {
-    if (info.season) {
-      query["season"] = info.season;
-    }
-    if (info.episode) {
-      query["episode"] = info.episode;
-    }
-  }
-  return query;
-};
-
-const searchSubtitle = (movedFileInfos: MovedFileInfo, OpenSubtitles) => {
-  return OpenSubtitles.search(createSimpleQuery(movedFileInfos))
-    .then((subsInfo) => {
-      if (!subsInfo || !subsInfo["en"])
-        return OpenSubtitles.search(createComplexQuery(movedFileInfos))
-          .then((complexSubs) => {
-            return complexSubs["en"];
-          })
-          .catch((err) => {
-            logProcess("error", `while searching complex query ${err}`);
-          });
-      return subsInfo["en"];
-    })
-    .catch((err) => {
-      logProcess("error", `while searching simple query ${err}`);
-    });
-};
-
-interface SubInfo {
-  url: string;
-  filename: string;
-}
-
-const downloadSubtitle = (subInfo: SubInfo, filmPath: string) => {
-  const url = subInfo.url;
-  const subName = subInfo.filename;
-  if (url) download(url, `${filmPath}/${subName}`);
-};
-
-const downloadSubtitles = (filesInfos: MovedFileInfo[], osInfos: OsInfos) => {
-  const OpenSubtitles = createOS(osInfos);
-  OpenSubtitles.login()
-    .then(async () => {
-      for (const fileInfo of filesInfos) {
-        if (fileInfo) {
-          const subInfos = await searchSubtitle(fileInfo, OpenSubtitles);
-          if (subInfos) {
-            logProcess(`subs`, `found ${fileInfo.name}`);
-            downloadSubtitle(subInfos, fileInfo.directory);
-          } else {
-            logProcess(`subs`, `not found ${fileInfo.name}`);
-          }
-        }
-      }
-    })
-    .catch((err) => {
-      logProcess("Error", `while loggin to OS, ${err}`);
-    });
-};
-*/
 const createPath = (path: string) => {
   if (!fs.existsSync(path)) {
     fs.mkdirSync(path);
@@ -181,16 +65,6 @@ const logProcess = (name: string, information) => {
     }
   );
 };
-/*
-const extractOSInfos = (args): OsInfos => {
-  const osUsername = args.u ? args.u : undefined;
-  const osPassword = args.p ? args.p : undefined;
-  return {
-    username: osUsername,
-    password: osPassword,
-  };
-};
-*/
 
 const processFolder = (
   currentDirectory: string,
@@ -200,7 +74,11 @@ const processFolder = (
   const folderPath = `${currentDirectory}/${folderName}`;
   const files = fs.readdirSync(folderPath);
   files.forEach((file) => {
+    if (isFile(`${folderPath}/${torrentName}`)) {
     processFile(folderPath, file, targetDirectory);
+    } else {
+      processFolder(folderPath, file, targetDirectory);
+    }
   });
 };
 
