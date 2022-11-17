@@ -119,4 +119,3 @@ if (isFile(`${downloadPath}/${torrentName}`)) {
 } else {
   processFolder(downloadPath, torrentName, targetDir);
 }
-//downloadSubtitles(movedFileInfos, extractOSInfos(args));
