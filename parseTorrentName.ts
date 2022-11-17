@@ -74,7 +74,7 @@ const processFolder = (
   const folderPath = `${currentDirectory}/${folderName}`;
   const files = fs.readdirSync(folderPath);
   files.forEach((file) => {
-    if (isFile(`${folderPath}/${torrentName}`)) {
+    if (isFile(`${folderPath}/${file}`)) {
     processFile(folderPath, file, targetDirectory);
     } else {
       processFolder(folderPath, file, targetDirectory);
