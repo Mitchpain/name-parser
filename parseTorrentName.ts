@@ -148,7 +148,7 @@ const createMoviePath = (information: MovieInformation, targetDir: string) => {
   const movieTitle = information.title;
   const year = information.year ? information.year : "";
   const folderName = `${movieTitle} (${year})`;
-  const path = `${targetDir}/Movies/${folderName}`;
+  const path = `${targetDir}/Movies/${folderName}/`;
   createPath(path);
   return path;
 };
