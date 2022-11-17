@@ -113,7 +113,6 @@ const torrentName = args.n;
 const targetDir = args.t;
 const downloadPath = args.d;
 
-//let movedFileInfos: MovedFileInfo[];
 
 if (isFile(`${downloadPath}/${torrentName}`)) {
   processFile(downloadPath, torrentName, targetDir);
